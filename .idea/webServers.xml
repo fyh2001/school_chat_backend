@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="191ded83-fa6c-4610-a959-2fbae5b9e82e" name="schoolChat" url="http://43.139.54.138">
+        <fileTransfer accessType="SFTP" host="43.139.54.138" port="22" sshConfigId="a02b50b0-dbeb-4cb8-a992-6d95d305b7fe" sshConfig="root@43.139.54.138:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

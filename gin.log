@@ -1,0 +1,34 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /public/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /public/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /api/user/getAll          --> schoolChat/app/controllers.GetAllUser (4 handlers)
+[GIN-debug] GET    /api/user/getUserByUserId --> schoolChat/app/controllers.GetUserByUserId (4 handlers)
+[GIN-debug] POST   /api/user/login           --> schoolChat/app/controllers.Login (3 handlers)
+[GIN-debug] POST   /api/user/register        --> schoolChat/app/controllers.Register (3 handlers)
+[GIN-debug] PUT    /api/user/update          --> schoolChat/app/controllers.UpdateUser (4 handlers)
+[GIN-debug] POST   /api/post/add             --> github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1 (2 handlers)
+[GIN-debug] GET    /api/post/getAllPost      --> schoolChat/app/controllers.GetAllPost (3 handlers)
+[GIN-debug] GET    /api/post/getAllPostByLogin --> schoolChat/app/controllers.GetAllPostByLogin (4 handlers)
+[GIN-debug] GET    /api/post/getPostByPostId --> schoolChat/app/controllers.GetPostByPostId (4 handlers)
+[GIN-debug] GET    /api/post/getPostByUserId --> schoolChat/app/controllers.GetPostByUserId (4 handlers)
+[GIN-debug] GET    /api/post/getPostByLoginUserId --> schoolChat/app/controllers.GetPostByLoginUserId (4 handlers)
+[GIN-debug] GET    /api/post/getLikedPostsByUserId --> schoolChat/app/controllers.GetLikedPostsByUserId (4 handlers)
+[GIN-debug] GET    /api/post/getRepliedPostsByUserId --> schoolChat/app/controllers.GetRepliedPostsByUserId (4 handlers)
+[GIN-debug] POST   /api/post/likePost        --> schoolChat/app/controllers.LikePost (4 handlers)
+[GIN-debug] POST   /api/post/unlikePost      --> schoolChat/app/controllers.UnlikePost (4 handlers)
+[GIN-debug] POST   /api/post/collectPost     --> schoolChat/app/controllers.CollectPost (4 handlers)
+[GIN-debug] POST   /api/post/unCollectPost   --> schoolChat/app/controllers.UnCollectPost (4 handlers)
+[GIN-debug] GET    /api/reply/getReplyByPostId --> schoolChat/app/controllers.GetReplyByPostId (4 handlers)
+[GIN-debug] GET    /api/reply/getReplyByReplyId --> schoolChat/app/controllers.GetReplyByReplyId (4 handlers)
+[GIN-debug] POST   /api/reply/likeReply      --> schoolChat/app/controllers.LikeReply (4 handlers)
+[GIN-debug] POST   /api/reply/unlikeReply    --> schoolChat/app/controllers.UnlikeReply (4 handlers)
+[GIN-debug] POST   /api/file/upload          --> schoolChat/app/controllers.UploadHandler (3 handlers)
+[GIN-debug] GET    /api/file/download        --> schoolChat/app/controllers.DownloadHandler (3 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :9112
