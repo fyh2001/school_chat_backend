@@ -35,7 +35,7 @@ type PostCollects struct {
 type PostResponse struct {
 	ID            int64  `json:"id"`            // 帖子ID json
 	UserId        int64  `json:"userId"`        // 用户ID
-	Username      string `json:"username"`      // 用户名
+	email         string `json:"email"`         // 用户名
 	Nickname      string `json:"nickname"`      // 昵称
 	Avatar        string `json:"avatar"`        // 头像
 	IsTop         int    `json:"isTop"`         // 是否置顶
@@ -73,7 +73,7 @@ func GetAllPost() (posts []PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, " +
 			"post.user_id, " +
-			"user.username, " +
+			"user.email, " +
 			"user.nickname, " +
 			"user.avatar, " +
 			"post.is_top, " +
@@ -104,7 +104,7 @@ func GetAllPostByLogin(userId int64) (posts []PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, "+
 			"post.user_id, "+
-			"user.username, "+
+			"user.email, "+
 			"user.nickname, "+
 			"user.avatar, "+
 			"post.is_top, "+
@@ -114,7 +114,8 @@ func GetAllPostByLogin(userId int64) (posts []PostResponse, err error) {
 			"post.create_time, "+
 			"post.update_time, "+
 			"count(distinct post_likes.id) as likes, "+
-			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) as replies,"+
+			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) + "+
+			"(select count(reply.id) from reply where reply.desk_id in (select reply.id from reply where reply.desk_type = 1 AND reply.desk_id = post.id)) as replies, "+
 			"count(distinct post_collects.id) as collects, "+
 			//"if (post_likes.user_id = ?, 1, 0) AS likeStatus", id).
 			"(SELECT 1 FROM post_likes WHERE post.id = post_likes.post_id AND post_likes.user_id = ? limit 1) as LikeStatus, "+
@@ -138,7 +139,7 @@ func GetPostByPostId(userId, postId int64) (post PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, "+
 			"post.user_id, "+
-			"user.username, "+
+			"user.email, "+
 			"user.nickname, "+
 			"user.avatar, "+
 			"post.is_top, "+
@@ -148,7 +149,8 @@ func GetPostByPostId(userId, postId int64) (post PostResponse, err error) {
 			"post.create_time, "+
 			"post.update_time, "+
 			"count(distinct post_likes.id) as likes, "+
-			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) as replies,"+
+			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) + "+
+			"(select count(reply.id) from reply where reply.desk_id in (select reply.id from reply where reply.desk_type = 1 AND reply.desk_id = post.id)) as replies, "+
 			"count(distinct post_collects.id) as collects, "+
 			"(SELECT 1 FROM post_likes WHERE post.id = post_likes.post_id AND post_likes.user_id = ? limit 1) as LikeStatus, "+
 			"(SELECT 1 FROM post_collects WHERE post.id = post_collects.post_id AND post_collects.user_id = ? limit 1) as collects", userId, userId).
@@ -172,7 +174,7 @@ func GetPostByUserId(userId int64) (posts []PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, "+
 			"post.user_id, "+
-			"user.username, "+
+			"user.email, "+
 			"user.nickname, "+
 			"user.avatar, "+
 			"post.is_top, "+
@@ -182,7 +184,8 @@ func GetPostByUserId(userId int64) (posts []PostResponse, err error) {
 			"post.create_time, "+
 			"post.update_time, "+
 			"count(distinct post_likes.id) as likes, "+
-			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) as replies,"+
+			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) + "+
+			"(select count(reply.id) from reply where reply.desk_id in (select reply.id from reply where reply.desk_type = 1 AND reply.desk_id = post.id)) as replies, "+
 			"count(distinct post_collects.id) as collects, "+
 			"(SELECT 1 FROM post_likes WHERE post.id = post_likes.post_id AND post_likes.user_id = ? limit 1) as LikeStatus, "+
 			"(SELECT 1 FROM post_collects WHERE post.id = post_collects.post_id AND post_collects.user_id = ? limit 1) as collects", userId, userId).
@@ -206,7 +209,7 @@ func GetPostByLoginUserId(userId int64) (posts []PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, "+
 			"post.user_id, "+
-			"user.username, "+
+			"user.email, "+
 			"user.nickname, "+
 			"user.avatar, "+
 			"post.is_top, "+
@@ -216,7 +219,8 @@ func GetPostByLoginUserId(userId int64) (posts []PostResponse, err error) {
 			"post.create_time, "+
 			"post.update_time, "+
 			"count(distinct post_likes.id) as likes, "+
-			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) as replies,"+
+			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) + "+
+			"(select count(reply.id) from reply where reply.desk_id in (select reply.id from reply where reply.desk_type = 1 AND reply.desk_id = post.id)) as replies, "+
 			"count(distinct post_collects.id) as collects, "+
 			"(SELECT 1 FROM post_likes WHERE post.id = post_likes.post_id AND post_likes.user_id = ? limit 1) as LikeStatus, "+
 			"(SELECT 1 FROM post_collects WHERE post.id = post_collects.post_id AND post_collects.user_id = ? limit 1) as collects", userId, userId).
@@ -240,7 +244,7 @@ func GetLikedPostsByUserId(userId int64) (posts []PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, "+
 			"post.user_id, "+
-			"user.username, "+
+			"user.email, "+
 			"user.nickname, "+
 			"user.avatar, "+
 			"post.is_top, "+
@@ -250,7 +254,8 @@ func GetLikedPostsByUserId(userId int64) (posts []PostResponse, err error) {
 			"post.create_time, "+
 			"post.update_time, "+
 			"count(distinct post_likes.id) as likes, "+
-			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) as replies,"+
+			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) + "+
+			"(select count(reply.id) from reply where reply.desk_id in (select reply.id from reply where reply.desk_type = 1 AND reply.desk_id = post.id)) as replies, "+
 			"count(distinct post_collects.id) as collects, "+
 			"(SELECT 1 FROM post_likes WHERE post.id = post_likes.post_id AND post_likes.user_id = ? limit 1) as LikeStatus, "+
 			"(SELECT 1 FROM post_collects WHERE post.id = post_collects.post_id AND post_collects.user_id = ? limit 1) as collects", userId, userId).
@@ -274,7 +279,7 @@ func GetRepliedPostsByUserId(userId int64) (posts []PostResponse, err error) {
 	result := database.GetDB().
 		Select("post.id, "+
 			"post.user_id, "+
-			"user.username, "+
+			"user.email, "+
 			"user.nickname, "+
 			"user.avatar, "+
 			"post.is_top, "+
@@ -284,7 +289,8 @@ func GetRepliedPostsByUserId(userId int64) (posts []PostResponse, err error) {
 			"post.create_time, "+
 			"post.update_time, "+
 			"count(distinct post_likes.id) as likes, "+
-			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) as replies,"+
+			"(select count(reply.id) from reply where reply.desk_type = 1 AND reply.desk_id = post.id) + "+
+			"(select count(reply.id) from reply where reply.desk_id in (select reply.id from reply where reply.desk_type = 1 AND reply.desk_id = post.id)) as replies, "+
 			"count(distinct post_collects.id) as collects, "+
 			"(SELECT 1 FROM post_likes WHERE post.id = post_likes.post_id AND post_likes.user_id = ? limit 1) as LikeStatus, "+
 			"(SELECT 1 FROM post_collects WHERE post.id = post_collects.post_id AND post_collects.user_id = ? limit 1) as collects", userId, userId).

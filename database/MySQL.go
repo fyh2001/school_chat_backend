@@ -15,8 +15,8 @@ import (
 // DB 数据库连接单例
 var db *gorm.DB
 
-// Init 初始化数据库连接
-func Init() {
+// InitMySQL 初始化数据库连接
+func InitMySQL() {
 	var err error
 
 	dsn := "root:fang1215@tcp(127.0.0.1:3306)/school_chat?charset=utf8mb4&parseTime=True&loc=Local"

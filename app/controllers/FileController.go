@@ -10,9 +10,9 @@ import (
 	Results "schoolChat/app/result"
 )
 
-var uploadPath = "/Users/huangye/Downloads/upload/"
+//var uploadPath = "/Users/huangye/Downloads/upload/"
 
-//var uploadPath = "/www/wwwroot/43.139.54.138/schoolWall/upload"
+var uploadPath = "/www/wwwroot/43.139.54.138/schoolWall/upload/"
 
 // UploadHandler 上传文件
 func UploadHandler(c *gin.Context) {
@@ -107,4 +107,18 @@ func DownloadHandler(c *gin.Context) {
 	c.Writer.Header().Add("Content-Disposition", "attachment; filename="+name)
 	c.Writer.Header().Add("Content-Type", "application/octet-stream")
 	c.File(uploadPath + name)
+}
+
+// DownloadAvatarHandler 下载头像
+func DownloadAvatarHandler(c *gin.Context) {
+	name := c.Query("filename")
+
+	if len([]byte(name)) == 0 {
+		c.JSON(200, Results.Err.Fail("文件名不能为空"))
+	}
+
+	c.Writer.Header().Add("Content-Disposition", "attachment; filename="+name)
+	c.Writer.Header().Add("Content-Type", "application/octet-stream")
+	c.Writer.Header().Add("Content-Transfer-Encoding", "binary")
+	c.File(uploadPath + "avatar/" + name)
 }

@@ -21,9 +21,12 @@ func InitRouter() *gin.Engine {
 		{
 			user.GET("/getAll", jwt.JWT(), controllers.GetAllUser)
 			user.GET("/getUserByUserId", jwt.JWT(), controllers.GetUserByUserId)
-			user.POST("/login", controllers.Login)
-			user.POST("/register", controllers.Register)
+			user.POST("/loginOrRegisterByPhone", controllers.LoginOrRegisterByPhone)
+			user.POST("/loginOrRegisterByMail", controllers.LoginOrRegisterByMail)
 			user.PUT("/update", jwt.JWT(), controllers.UpdateUser)
+			user.PUT("/updateNickname", jwt.JWT(), controllers.UpdateNickname)
+			user.POST("/getMailCode", controllers.GetMailCode)
+			user.POST("/getPhoneCode", controllers.GetPhoneCode)
 		}
 		post := root.Group("/post")
 		{
@@ -45,6 +48,7 @@ func InitRouter() *gin.Engine {
 			reply.POST("/addReply", jwt.JWT(), controllers.AddReply)
 			reply.GET("/getReplyByPostId", jwt.JWT(), controllers.GetReplyByPostId)
 			reply.GET("/getReplyByReplyId", jwt.JWT(), controllers.GetReplyByReplyId)
+			reply.GET("/getSecondReplyByReplyId", jwt.JWT(), controllers.GetSecondReplyByReplyId)
 			reply.POST("likeReply", jwt.JWT(), controllers.LikeReply)
 			reply.POST("unlikeReply", jwt.JWT(), controllers.UnlikeReply)
 		}
@@ -52,6 +56,7 @@ func InitRouter() *gin.Engine {
 		{
 			file.POST("/upload", jwt.JWT(), controllers.UploadHandler)
 			file.GET("/download", controllers.DownloadHandler)
+			file.GET("/downloadAvatar", controllers.DownloadAvatarHandler)
 		}
 	}
 

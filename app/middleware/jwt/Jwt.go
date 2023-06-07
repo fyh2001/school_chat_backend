@@ -24,13 +24,11 @@ func JWT() gin.HandlerFunc {
 				code = result.TokenInvalid.Code // token不合法
 			} else {
 				id := claims.ID
-				username := claims.Username
-				password := claims.Password
+				email := claims.Email
 
 				// 将当前请求的user信息保存到请求的上下文c上
 				c.Set("id", id)
-				c.Set("username", username)
-				c.Set("password", password)
+				c.Set("email", email)
 			}
 			//else if time.Now().Unix() > claims.ExpiresAt {
 			//	code = result.TokenExpired.Code // token已过期

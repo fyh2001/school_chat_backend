@@ -9,23 +9,23 @@ var jwtSecret = []byte("schoolChat") // jwt密钥
 
 // Claims Claims是一些用户信息状态和额外的jwt参数
 type Claims struct {
-	ID       int64     `json:"id"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Time     time.Time `json:"time"`
+	ID    int64     `json:"id"`
+	Phone string    `json:"phone"`
+	Email string    `json:"email"`
+	Time  time.Time `json:"time"`
 	jwt.StandardClaims
 }
 
 // GenerateToken 根据用户的用户名和密码参数token
-func GenerateToken(id int64, username, password string) (string, error) {
+func GenerateToken(id int64, phone, mail string) (string, error) {
 	nowTime := time.Now()
 	//expireTime := nowTime.Add(3 * time.Hour).Unix() // 过期时间为3小时
 
 	claims := Claims{
-		ID:       id,
-		Username: username,
-		Password: password,
-		Time:     nowTime,
+		ID:    id,
+		Phone: phone,
+		Email: mail,
+		Time:  nowTime,
 		StandardClaims: jwt.StandardClaims{
 			//ExpiresAt: expireTime,   // 过期时间
 			Issuer: "schoolChat", // 签发人
