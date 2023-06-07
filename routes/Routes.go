@@ -56,7 +56,6 @@ func InitRouter() *gin.Engine {
 		{
 			file.POST("/upload", jwt.JWT(), controllers.UploadHandler)
 			file.GET("/download", controllers.DownloadHandler)
-			file.GET("/downloadAvatar", controllers.DownloadAvatarHandler)
 		}
 	}
 

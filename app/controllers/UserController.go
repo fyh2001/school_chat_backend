@@ -288,8 +288,11 @@ func GetMailCode(c *gin.Context) {
 		mail.Body = fmt.Sprintf("您的验证码为: %v, 有效期为15分钟。", mailCode)
 	}
 
+	fmt.Printf("mail: %v\n", mail)
+
 	err = mail.SendMail() // 发送邮件
 	if err != nil {
+		fmt.Printf("发送失败: %v\n", err)
 		c.JSON(200, Results.Err.Fail("发送失败"))
 		return
 	}

@@ -11,7 +11,7 @@ type Mail struct {
 	Body    string // 内容
 }
 
-var password = "uqtthhbtslpqbgee" // 邮箱smtp授权码
+var password = "fstrpvwdziuibibd" // 邮箱smtp授权码
 
 // SendMail 发送邮件
 func (mail *Mail) SendMail() error {
