@@ -20,13 +20,17 @@ func InitRouter() *gin.Engine {
 		user := root.Group("/user")
 		{
 			user.GET("/getAll", jwt.JWT(), controllers.GetAllUser)
-			user.GET("/getUserByUserId", jwt.JWT(), controllers.GetUserByUserId)
+			user.GET("/getUserByLoginedUserId", jwt.JWT(), controllers.GetUserByLoginedUserId)
+			user.GET("getUserByUserId", jwt.JWT(), controllers.GetUserByUserId)
 			user.POST("/loginOrRegisterByPhone", controllers.LoginOrRegisterByPhone)
 			user.POST("/loginOrRegisterByMail", controllers.LoginOrRegisterByMail)
-			user.PUT("/update", jwt.JWT(), controllers.UpdateUser)
-			user.PUT("/updateNickname", jwt.JWT(), controllers.UpdateNickname)
 			user.POST("/getMailCode", controllers.GetMailCode)
 			user.POST("/getPhoneCode", controllers.GetPhoneCode)
+			user.PUT("/update", jwt.JWT(), controllers.UpdateUser)
+			user.PUT("/updateNickname", jwt.JWT(), controllers.UpdateNickname)
+			user.PUT("updateMail", jwt.JWT(), controllers.UpdateMail)
+			user.PUT("/updatePhone", jwt.JWT(), controllers.UpdatePhone)
+			user.DELETE("deletePhone", jwt.JWT(), controllers.DeletePhone)
 		}
 		post := root.Group("/post")
 		{
@@ -40,8 +44,9 @@ func InitRouter() *gin.Engine {
 			post.GET("/getRepliedPostsByUserId", jwt.JWT(), controllers.GetRepliedPostsByUserId)
 			post.POST("/likePost", jwt.JWT(), controllers.LikePost)
 			post.POST("/unlikePost", jwt.JWT(), controllers.UnlikePost)
-			post.POST("collectPost", jwt.JWT(), controllers.CollectPost)
-			post.POST("unCollectPost", jwt.JWT(), controllers.UnCollectPost)
+			post.POST("/collectPost", jwt.JWT(), controllers.CollectPost)
+			post.POST("/unCollectPost", jwt.JWT(), controllers.UnCollectPost)
+			post.DELETE("/deletePostByPostId", jwt.JWT(), controllers.DeletePostByPostId)
 		}
 		reply := root.Group("/reply")
 		{

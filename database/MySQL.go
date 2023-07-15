@@ -54,8 +54,8 @@ func InitMySQL() {
 	sqlDB.SetMaxIdleConns(20)
 }
 
-// GetDB 获取 gorm db，其他包调用此方法即可拿到 db
+// GetMySQL 获取 gorm db，其他包调用此方法即可拿到 db
 // 无需担心不同协程并发时使用这个 db 对象会公用一个连接，因为 db 在调用其方法时候会从数据库连接池获取新的连接
-func GetDB() *gorm.DB {
+func GetMySQL() *gorm.DB {
 	return db
 }

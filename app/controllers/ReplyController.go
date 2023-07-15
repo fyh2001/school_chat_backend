@@ -11,6 +11,7 @@ import (
 type ReplyResponse struct {
 	ID            int64                  `json:"id"`            // 回复ID
 	DeskType      int                    `json:"deskType"`      // 目标类型 1:帖子 2:回复
+	PostID        int64                  `json:"postId"`        // 所属帖子ID
 	DeskId        int64                  `json:"deskId"`        // 目标ID
 	DeskSecondId  int64                  `json:"deskSecondId"`  // 目标二级ID
 	UserId        int64                  `json:"userId"`        // 用户ID
@@ -24,8 +25,6 @@ type ReplyResponse struct {
 	SecondReplies []models.SecondReplies `json:"secondReplies"` // 二级回复
 	Likes         int                    `json:"likes"`         // 点赞数
 	Replies       int                    `json:"replies"`       // 回复数
-	Collects      int                    `json:"collects"`      // 收藏数
-	CollectStatus int                    `json:"collectStatus"` // 收藏状态
 	LikeStatus    int                    `json:"likeStatus"`    // 点赞状态
 	CreateTime    int64                  `json:"createTime"`    // 创建时间
 	UpdateTime    int64                  `json:"updateTime"`    // 更新时间
@@ -73,6 +72,7 @@ func GetReplyByPostId(c *gin.Context) {
 		replyResponse = append(replyResponse, ReplyResponse{
 			ID:            reply.ID,
 			DeskType:      reply.DeskType,
+			PostID:        reply.PostID,
 			DeskId:        reply.DeskId,
 			DeskSecondId:  reply.DeskSecondId,
 			UserId:        reply.UserId,
@@ -86,8 +86,6 @@ func GetReplyByPostId(c *gin.Context) {
 			SecondReplies: secondReplies,
 			Likes:         reply.Likes,
 			Replies:       reply.Replies,
-			Collects:      reply.Collects,
-			CollectStatus: reply.CollectStatus,
 			LikeStatus:    reply.LikeStatus,
 			CreateTime:    reply.CreateTime,
 			UpdateTime:    reply.UpdateTime,
@@ -116,6 +114,7 @@ func GetReplyByReplyId(c *gin.Context) {
 	replyResponse := ReplyResponse{
 		ID:            result.ID,
 		DeskType:      result.DeskType,
+		PostID:        result.PostID,
 		DeskId:        result.DeskId,
 		DeskSecondId:  result.DeskSecondId,
 		UserId:        result.UserId,
@@ -129,8 +128,6 @@ func GetReplyByReplyId(c *gin.Context) {
 		SecondReplies: secondReplies,
 		Likes:         result.Likes,
 		Replies:       result.Replies,
-		Collects:      result.Collects,
-		CollectStatus: result.CollectStatus,
 		LikeStatus:    result.LikeStatus,
 		CreateTime:    result.CreateTime,
 		UpdateTime:    result.UpdateTime,

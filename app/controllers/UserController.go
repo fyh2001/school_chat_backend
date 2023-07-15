@@ -15,27 +15,28 @@ import (
 )
 
 var avatar = []string{
-	"girl_1.svg",
-	"girl_2.svg",
-	"girl_3.svg",
-	"girl_4.svg",
-	"girl_5.svg",
-	"girl_6.svg",
-	"girl_7.svg",
-	"girl_8.svg",
-	"girl_9.svg",
-	"girl_10.svg",
-	"girl_11.svg",
-	"boy_1.svg",
-	"boy_2.svg",
-	"boy_3.svg",
-	"boy_4.svg",
-	"boy_5.svg",
+	"girl_1.png",
+	"girl_2.png",
+	"girl_3.png",
+	"girl_4.png",
+	"girl_5.png",
+	"girl_6.png",
+	"girl_7.png",
+	"girl_8.png",
+	"girl_9.png",
+	"girl_10.png",
+	"girl_11.png",
+	"boy_1.png",
+	"boy_2.png",
+	"boy_3.png",
+	"boy_4.png",
+	"boy_5.png",
 }
 
 // GetAllUser 获取所有用户
 func GetAllUser(c *gin.Context) {
 	var json models.User
+
 	err := c.BindJSON(&json)
 
 	if err != nil {
@@ -59,11 +60,29 @@ func GetAllUser(c *gin.Context) {
 	})
 }
 
-// GetUserByUserId 根据用户ID获取用户信息
-func GetUserByUserId(c *gin.Context) {
+// GetUserByLoginedUserId 根据登录用户ID获取用户信息
+func GetUserByLoginedUserId(c *gin.Context) {
 	userId, _ := c.Get("id")
 
-	result, err := models.GetUserByUserId(userId.(int64))
+	result, err := models.GetUserByLoginedUserId(userId.(int64))
+
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("查询失败"))
+		return
+	}
+
+	c.JSON(200, Results.Ok.Success(result))
+}
+
+// GetUserByUserId 根据用户ID获取用户信息
+func GetUserByUserId(c *gin.Context) {
+	// 获取参数
+	userId, _ := strconv.ParseInt(c.Query("userId"), 10, 64)
+
+	// 获取用户id
+	LoginedUserId, _ := c.Get("id")
+
+	result, err := models.GetUserByUserId(LoginedUserId.(int64), userId)
 
 	if err != nil {
 		c.JSON(200, Results.Err.Fail("查询失败"))
@@ -189,7 +208,7 @@ func LoginOrRegisterByMail(c *gin.Context) {
 		}
 
 		// 创建token
-		token, err := util.GenerateToken(userData.ID, "", mail.Email)
+		token, err := util.GenerateToken(userId, "", mail.Email)
 		if err != nil {
 			c.JSON(200, Results.ErrToken.Fail("token生成失败"))
 			return
@@ -199,9 +218,9 @@ func LoginOrRegisterByMail(c *gin.Context) {
 		data["message"] = "注册并登录成功"
 		data["token"] = token
 		data["id"] = userId
-		data["email"] = mail.Email
-		data["nickname"] = mail.Email
-		data["avatar"] = userData.Avatar
+		data["email"] = user.Email
+		data["nickname"] = user.Email
+		data["avatar"] = user.Avatar
 
 		//删除redis中的验证码
 		database.GetRedis().Del(context.Background(), mail.Email)
@@ -361,4 +380,142 @@ func UpdateNickname(c *gin.Context) {
 
 	c.JSON(200, Results.Ok.Success("更新成功"))
 
+}
+
+// UpdateMail 更新邮箱
+func UpdateMail(c *gin.Context) {
+	var mail models.UserLoginByEmail
+
+	err := c.BindJSON(&mail)
+	if err != nil {
+		fmt.Printf("获取参数失败: %v", err)
+		c.JSON(200, Results.ErrBind.Fail("获取参数失败"))
+		return
+	}
+
+	id, _ := c.Get("id")
+
+	// 验证验证码是否正确
+	if mail.Code == "" {
+		c.JSON(200, Results.Err.Fail("验证码不能为空"))
+		return
+	} else {
+		// 从redis中获取验证码
+		mailCode, _ := database.GetRedis().Get(context.Background(), mail.Email).Result()
+		if mailCode != mail.Code {
+			c.JSON(200, Results.Err.Fail("验证码错误"))
+			return
+		}
+	}
+
+	// 验证邮箱是否存在
+	userData, _ := models.GetUserByEmail(mail.Email)
+
+	if userData.ID != 0 {
+		c.JSON(200, Results.Err.Fail("邮箱已存在"))
+		return
+	}
+
+	// 更新邮箱
+	err = models.UpdateMail(id.(int64), mail.Email)
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("更新失败"))
+		return
+	}
+
+	c.JSON(200, Results.Ok.Success("更新成功"))
+}
+
+// UpdatePhone 更新手机号
+func UpdatePhone(c *gin.Context) {
+	var phone models.UserLoginByPhone
+
+	err := c.BindJSON(&phone)
+	if err != nil {
+		fmt.Printf("获取参数失败: %v", err)
+		c.JSON(200, Results.ErrBind.Fail("获取参数失败"))
+		return
+	}
+
+	id, _ := c.Get("id")
+
+	// 验证验证码是否正确
+	if phone.Code == "" {
+		c.JSON(200, Results.Err.Fail("验证码不能为空"))
+		return
+	} else {
+		// 从redis中获取验证码
+		phoneCode, _ := database.GetRedis().Get(context.Background(), phone.Phone).Result()
+		if phoneCode != phone.Code {
+			c.JSON(200, Results.Err.Fail("验证码错误"))
+			return
+		}
+	}
+
+	// 验证手机号是否存在
+	userData, _ := models.GetUserByPhone(phone.Phone)
+
+	if userData.ID != 0 {
+		c.JSON(200, Results.Err.Fail("手机号已存在"))
+		return
+	}
+
+	// 更新手机号
+	err = models.UpdatePhone(id.(int64), phone.Phone)
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("更新失败"))
+		return
+	}
+
+	c.JSON(200, Results.Ok.Success("更新成功"))
+
+}
+
+// DeletePhone 解绑用户手机号
+func DeletePhone(c *gin.Context) {
+	var phone models.UserLoginByPhone
+
+	err := c.BindJSON(&phone)
+	if err != nil {
+		fmt.Printf("获取参数失败: %v", err)
+		c.JSON(200, Results.ErrBind.Fail("获取参数失败"))
+		return
+	}
+
+	id, _ := c.Get("id")
+
+	// 验证验证码是否正确
+	if phone.Code == "" {
+		c.JSON(200, Results.Err.Fail("验证码不能为空"))
+		return
+	} else {
+		// 从redis中获取验证码
+		phoneCode, _ := database.GetRedis().Get(context.Background(), phone.Phone).Result()
+		if phoneCode != phone.Code {
+			c.JSON(200, Results.Err.Fail("验证码错误"))
+			return
+		}
+	}
+
+	// 验证手机号是否存在
+	userData, _ := models.GetUserByPhone(phone.Phone)
+
+	if userData.ID == 0 {
+		c.JSON(200, Results.Err.Fail("手机号不存在"))
+		return
+	}
+
+	// 验证该手机号是否与用户手机号相同
+	if userData.Phone != phone.Phone {
+		c.JSON(200, Results.Err.Fail("手机号匹配失败"))
+	}
+
+	// 解绑手机号
+	err = models.DeletePhone(id.(int64))
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("解绑失败"))
+		return
+	}
+
+	c.JSON(200, Results.Ok.Success("解绑成功"))
 }

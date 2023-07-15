@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"schoolChat/app/models"
 	Results "schoolChat/app/result"
 	"strconv"
+	"strings"
 )
 
 // AddPost 新增帖子
@@ -211,4 +213,65 @@ func UnCollectPost(c *gin.Context) {
 	}
 
 	c.JSON(200, Results.Ok.Success("取消收藏成功"))
+}
+
+// DeletePostByPostId 根据帖子ID删除帖子
+func DeletePostByPostId(c *gin.Context) {
+	// 获取参数
+	// 获取参数
+	postId, err := strconv.ParseInt(c.Query("postId"), 10, 64)
+
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("删除失败。原因:参数错误"))
+		return
+	}
+
+	userId, _ := c.Get("id") // 获取用户id
+
+	post, err := models.CheckPostByPostId(postId) // 检查帖子是否存在
+
+	if post.ID == 0 {
+		c.JSON(200, Results.Err.Fail("删除失败。原因:帖子不存在"))
+		return
+	}
+
+	if post.UserId != userId.(int64) {
+		c.JSON(200, Results.Err.Fail("删除失败。原因:无权限"))
+		return
+	}
+
+	// 将图片字符串转换为数组
+	images := strings.Split(post.Images, ",")
+
+	fmt.Printf("images: %v\n", images)
+
+	err = models.DeletePostByPostId(postId) // 删除帖子
+
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("删除失败"))
+		return
+	}
+
+	err = models.DeletePostLikesByPostId(postId) // 删除帖子点赞
+
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("删除失败。帖子点赞记录删除失败"))
+		return
+	}
+
+	err = models.DeleteReplyByPostId(postId) // 删除帖子回复
+
+	if err != nil {
+		c.JSON(200, Results.Err.Fail("删除失败。帖子回复删除失败"))
+		return
+	}
+
+	err = DeleteImage(images) // 删除图片
+
+	if err != nil {
+		c.JSON(200, Results.Err.Fail(err.Error()))
+		return
+	}
+
+	c.JSON(200, Results.Ok.Success("删除成功"))
 }
